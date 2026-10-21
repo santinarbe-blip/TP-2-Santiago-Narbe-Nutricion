@@ -1,0 +1,1 @@
+"""Aplicación de comparación de etiquetas nutricionales."""
