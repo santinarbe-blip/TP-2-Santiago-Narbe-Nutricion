@@ -15,14 +15,14 @@ CAMPOS_NUMERICOS = (
     "fibra_g_100g",
     "sal_g_100g",
 )
-CAMPOS_REQUERIDOS = ("codigo", "nombre", "categoria", *CAMPOS_NUMERICOS)
+CAMPOS_IDENTIFICACION = ("codigo", "nombre", "categoria")
 PATRON_EAN = re.compile(r"(?:\d{8}|\d{13})\Z")
 
 
 def normalizar_ficha(registro: dict) -> ProductoNutricional:
-    faltantes = [campo for campo in CAMPOS_REQUERIDOS if campo not in registro]
+    faltantes = [campo for campo in CAMPOS_IDENTIFICACION if campo not in registro]
     if faltantes:
-        raise ValueError(f"faltan campos: {', '.join(faltantes)}")
+        raise ValueError(f"faltan campos obligatorios: {', '.join(faltantes)}")
 
     codigo = str(registro["codigo"]).strip()
     nombre = str(registro["nombre"]).strip()
@@ -34,8 +34,12 @@ def normalizar_ficha(registro: dict) -> ProductoNutricional:
 
     valores = {}
     for campo in CAMPOS_NUMERICOS:
+        dato = registro.get(campo)
+        if dato is None or (isinstance(dato, str) and not dato.strip()):
+            valores[campo] = None
+            continue
         try:
-            valor = float(registro[campo])
+            valor = float(dato)
         except (TypeError, ValueError):
             raise ValueError(f"{campo} debe ser numérico") from None
         if not math.isfinite(valor):
@@ -46,9 +50,17 @@ def normalizar_ficha(registro: dict) -> ProductoNutricional:
             raise ValueError(f"{campo} no puede superar 100 g/100 g")
         valores[campo] = valor
 
-    if valores["azucares_g_100g"] > valores["carbohidratos_g_100g"]:
+    azucares = valores["azucares_g_100g"]
+    carbohidratos = valores["carbohidratos_g_100g"]
+    if azucares is not None and carbohidratos is not None and azucares > carbohidratos:
         raise ValueError("azúcares no pueden superar carbohidratos")
-    if valores["grasas_saturadas_g_100g"] > valores["grasas_g_100g"]:
+    grasas_saturadas = valores["grasas_saturadas_g_100g"]
+    grasas = valores["grasas_g_100g"]
+    if (
+        grasas_saturadas is not None
+        and grasas is not None
+        and grasas_saturadas > grasas
+    ):
         raise ValueError("grasas saturadas no pueden superar grasas totales")
     return ProductoNutricional(codigo, nombre, categoria, **valores)
 
@@ -83,7 +95,22 @@ def comparar_etiquetas(
         return tabla
     if categoria:
         tabla = tabla[tabla["categoria"].str.casefold() == categoria.casefold()]
-    return tabla.sort_values(columna, ascending=True).reset_index(drop=True)
+    return tabla.sort_values(
+        columna, ascending=True, na_position="last"
+    ).reset_index(drop=True)
+
+
+def resumir_faltantes(registros: list[dict]) -> list[dict]:
+    campos = (*CAMPOS_IDENTIFICACION, *CAMPOS_NUMERICOS)
+    resumen = []
+    for campo in campos:
+        cantidad = sum(
+            registro.get(campo) is None
+            or (isinstance(registro.get(campo), str) and not registro[campo].strip())
+            for registro in registros
+        )
+        resumen.append({"campo": campo, "faltantes": cantidad})
+    return resumen
 
 
 def resumir_categorias(productos: list[ProductoNutricional]) -> list[dict]:

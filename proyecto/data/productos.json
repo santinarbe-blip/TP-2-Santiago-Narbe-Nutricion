@@ -6,7 +6,7 @@
     "energia_kcal_100g": 355.6,
     "proteinas_g_100g": 6.2,
     "carbohidratos_g_100g": 58.9,
-    "azucares_g_100g": 6.0,
+    "azucares_g_100g": null,
     "grasas_g_100g": 9.0,
     "grasas_saturadas_g_100g": 2.0,
     "fibra_g_100g": 7.1,
@@ -179,7 +179,7 @@
     "grasas_g_100g": 4.1,
     "grasas_saturadas_g_100g": 3.7,
     "fibra_g_100g": 3.3,
-    "sal_g_100g": 2.49
+    "sal_g_100g": null
   },
   {
     "codigo": "2000000000015",
@@ -360,7 +360,7 @@
     "azucares_g_100g": 12.0,
     "grasas_g_100g": 4.4,
     "grasas_saturadas_g_100g": 1.8,
-    "fibra_g_100g": 1.7,
+    "fibra_g_100g": null,
     "sal_g_100g": 0.24
   },
   {
@@ -550,7 +550,7 @@
     "nombre": "Crackers 07",
     "categoria": "Snacks",
     "energia_kcal_100g": 296.3,
-    "proteinas_g_100g": 4.4,
+    "proteinas_g_100g": null,
     "carbohidratos_g_100g": 49.7,
     "azucares_g_100g": 32.6,
     "grasas_g_100g": 8.1,
@@ -783,14 +783,14 @@
     "codigo": "EAN-INVALIDO",
     "nombre": "Registro de prueba",
     "categoria": "Cereales",
-    "energia_kcal_100g": 355.6,
-    "proteinas_g_100g": 6.2,
-    "carbohidratos_g_100g": 58.9,
-    "azucares_g_100g": 6.0,
-    "grasas_g_100g": 9.0,
-    "grasas_saturadas_g_100g": 2.0,
-    "fibra_g_100g": 7.1,
-    "sal_g_100g": 1.8
+    "energia_kcal_100g": 352.0,
+    "proteinas_g_100g": 10.6,
+    "carbohidratos_g_100g": 44.4,
+    "azucares_g_100g": 34.1,
+    "grasas_g_100g": 13.0,
+    "grasas_saturadas_g_100g": 9.8,
+    "fibra_g_100g": 7.5,
+    "sal_g_100g": 1.76
   },
   {
     "codigo": "2999999999999",

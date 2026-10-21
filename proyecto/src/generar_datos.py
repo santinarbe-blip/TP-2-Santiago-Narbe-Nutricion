@@ -69,7 +69,10 @@ def generar_registros() -> list[dict]:
             )
             consecutivo += 1
 
-    registro_codigo_invalido = dict(registros[0])
+    for indice, campo in ((0, "azucares_g_100g"), (13, "sal_g_100g"), (27, "fibra_g_100g"), (42, "proteinas_g_100g")):
+        registros[indice][campo] = None
+
+    registro_codigo_invalido = dict(registros[1])
     registro_codigo_invalido.update(codigo="EAN-INVALIDO", nombre="Registro de prueba")
     registros.append(registro_codigo_invalido)
     registro_nutriente_invalido = dict(registros[1])
@@ -93,7 +96,7 @@ def main() -> None:
         escritor.writerows(registros)
     with (DIRECTORIO_DATOS / "productos.json").open("w", encoding="utf-8") as archivo_json:
         json.dump(registros, archivo_json, ensure_ascii=False, indent=2)
-    print("Se generaron 60 fichas válidas y 2 registros de prueba en data/.")
+    print("Se generaron 60 fichas, con 4 valores ausentes y 2 filas inválidas, en data/.")
 
 
 if __name__ == "__main__":

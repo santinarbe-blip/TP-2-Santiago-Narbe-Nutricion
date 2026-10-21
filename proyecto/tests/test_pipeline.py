@@ -3,9 +3,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import pandas as pd
+
 from src.fuentes import FuenteCSV, FuenteJSON
 from src.generar_datos import generar_registros
-from src.pipeline import comparar_etiquetas, limpiar_productos
+from src.pipeline import comparar_etiquetas, limpiar_productos, resumir_faltantes
 
 
 class PipelineNutricionalTests(unittest.TestCase):
@@ -27,6 +29,21 @@ class PipelineNutricionalTests(unittest.TestCase):
         self.assertEqual(len(productos), 2)
         self.assertEqual(rechazos[0]["motivo"], "código duplicado")
 
+    def test_nutrientes_ausentes_se_conservan_como_no_disponibles(self):
+        registro = dict(generar_registros()[0])
+        registro["azucares_g_100g"] = ""
+        productos, rechazos = limpiar_productos([registro])
+        tabla = comparar_etiquetas(productos, None, "azucares")
+        faltantes = resumir_faltantes([registro])
+
+        self.assertEqual(rechazos, [])
+        self.assertIsNone(productos[0].azucares_g_100g)
+        self.assertTrue(pd.isna(tabla.loc[0, "azucares_g_100g"]))
+        self.assertEqual(
+            next(item["faltantes"] for item in faltantes if item["campo"] == "azucares_g_100g"),
+            1,
+        )
+
     def test_lecturas_csv_y_json_son_equivalentes(self):
         registros = generar_registros()
         with tempfile.TemporaryDirectory() as directorio:
@@ -45,7 +62,7 @@ class PipelineNutricionalTests(unittest.TestCase):
 
         csv_resultado = comparar_etiquetas(csv_validos, None, "sal")
         json_resultado = comparar_etiquetas(json_validos, None, "sal")
-        self.assertEqual(csv_resultado.to_dict(orient="records"), json_resultado.to_dict(orient="records"))
+        pd.testing.assert_frame_equal(csv_resultado, json_resultado)
         self.assertEqual(csv_rechazos, json_rechazos)
 
 

@@ -4,7 +4,7 @@
 
 `productos.csv` y `productos.json` son versiones equivalentes de datos sintéticos generados por `python src/generar_datos.py`. La semilla fija `2026` permite reproducir los mismos registros. No se consultan fuentes externas ni se incluyen datos personales; por lo tanto, no hay una licencia de terceros aplicable. Fecha de generación del conjunto inicial: 2026-10-21.
 
-El conjunto contiene 60 fichas válidas distribuidas entre Cereales, Bebidas, Lácteos, Snacks y Conservas, además de dos filas con errores intencionales. Esas filas se conservan para probar el registro de rechazos; no forman parte del análisis. Los números se diseñaron con fines didácticos y no corresponden a marcas o productos reales.
+El conjunto contiene 60 fichas analizables distribuidas entre Cereales, Bebidas, Lácteos, Snacks y Conservas, además de dos filas inválidas intencionales. Cuatro fichas tienen un nutriente ausente para probar que se informa como no disponible y no se reemplaza por cero. Las dos filas inválidas prueban el registro de rechazos y no forman parte del análisis. Los números se diseñaron con fines didácticos y no corresponden a marcas o productos reales.
 
 ## Unidad de análisis y esquema
 
@@ -23,6 +23,8 @@ Cada objeto/fila representa un producto. Todos los nutrientes se expresan por ca
 | `grasas_saturadas_g_100g` | número | gramos por 100 g |
 | `fibra_g_100g` | número | gramos por 100 g |
 | `sal_g_100g` | número | gramos por 100 g |
+
+Los campos nutricionales pueden estar vacíos en CSV o ser `null` en JSON. Se conservan como faltantes, se excluyen de cálculos que requieren su valor y se exportan como “no disponible”. Los campos de identificación siguen siendo obligatorios.
 
 Los códigos EAN se usan como texto para preservar ceros iniciales. La expresión regular comprueba solo 8 o 13 dígitos: no comprueba que el código exista ni calcula su dígito de control.
 

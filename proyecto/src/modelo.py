@@ -6,16 +6,16 @@ class ProductoNutricional:
     codigo: str
     nombre: str
     categoria: str
-    energia_kcal_100g: float
-    proteinas_g_100g: float
-    carbohidratos_g_100g: float
-    azucares_g_100g: float
-    grasas_g_100g: float
-    grasas_saturadas_g_100g: float
-    fibra_g_100g: float
-    sal_g_100g: float
+    energia_kcal_100g: float | None
+    proteinas_g_100g: float | None
+    carbohidratos_g_100g: float | None
+    azucares_g_100g: float | None
+    grasas_g_100g: float | None
+    grasas_saturadas_g_100g: float | None
+    fibra_g_100g: float | None
+    sal_g_100g: float | None
 
-    def obtener_nutriente(self, nutriente: str) -> float:
+    def obtener_nutriente(self, nutriente: str) -> float | None:
         if nutriente == "energia":
             return self.energia_kcal_100g
         atributo = f"{nutriente}_g_100g"
