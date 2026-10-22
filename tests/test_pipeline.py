@@ -63,6 +63,24 @@ class PipelineNutricionalTests(unittest.TestCase):
         self.assertEqual(productos, [])
         self.assertIn("8 o 13 dígitos", rechazos[0]["motivo"])
 
+    def test_codigo_csv_con_cero_inicial_se_conserva_como_texto(self):
+        registro = dict(generar_registros()[0])
+        registro["codigo"] = "01234567"
+        with tempfile.TemporaryDirectory() as directorio:
+            ruta_csv = Path(directorio) / "producto.csv"
+            import csv
+
+            with ruta_csv.open("w", newline="", encoding="utf-8") as archivo:
+                escritor = csv.DictWriter(archivo, fieldnames=registro.keys())
+                escritor.writeheader()
+                escritor.writerow(registro)
+
+            leido = FuenteCSV().cargar(ruta_csv)[0]
+
+        producto = normalizar_ficha(leido)
+        self.assertEqual(leido["codigo"], "01234567")
+        self.assertEqual(producto.codigo, "01234567")
+
     def test_codigo_con_digitos_arabigo_indicos_se_rechaza(self):
         registro = dict(generar_registros()[0])
         registro["codigo"] = "١٢٣٤٥٦٧٨٩٠١٢٣"
