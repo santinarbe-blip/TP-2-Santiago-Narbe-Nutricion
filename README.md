@@ -91,9 +91,31 @@ Son reglas didácticas de plausibilidad: no certifican cumplimiento regulatorio 
 
 ## 8. Ejemplo de resultado
 
-Al ejecutar `python -m src.main --entrada data/productos.csv --categoria Snacks --nutriente azucares --sin-graficos` se leen 62 registros: 60 productos válidos y 2 filas rechazadas. Se comparan 12 productos; Galletas 09 presenta el menor valor disponible de azúcares (5,2 g/100 g).
+Ejecución de `python -m src.main --entrada data/productos.csv --categoria Snacks --nutriente azucares`:
 
-El gráfico correspondiente está disponible en [docs/ejemplo_azucares_snacks.png](docs/ejemplo_azucares_snacks.png). Las barras ordenan los productos por el valor disponible; no representan una evaluación global de salud.
+```text
+Registros leídos: 62
+Productos válidos: 60
+Filas rechazadas: 2
+Productos comparados: 12
+
+Ordenados por azucares (menor a mayor):
+       codigo      nombre categoria  azucares_g_100g
+2000000000045 Galletas 09    Snacks              5.2
+2000000000041 Galletas 05    Snacks              5.7
+2000000000044      Mix 08    Snacks              6.7
+2000000000047 Crackers 11    Snacks              7.4
+2000000000037 Galletas 01    Snacks              9.3
+2000000000040      Mix 04    Snacks             15.9
+2000000000038    Barra 02    Snacks             22.1
+2000000000046    Barra 10    Snacks             22.3
+2000000000042    Barra 06    Snacks             23.5
+2000000000048      Mix 12    Snacks             28.5
+2000000000043 Crackers 07    Snacks             32.6
+2000000000039 Crackers 03    Snacks             35.4
+```
+
+El gráfico de azúcares por producto está disponible en [docs/ejemplo_azucares_snacks.png](docs/ejemplo_azucares_snacks.png). Cada barra representa gramos de azúcares por 100 g: se leen los productos en el eje vertical y la cantidad en el horizontal; una barra más larga indica un valor mayor, no una evaluación de salud.
 
 ## 9. Interpretación y limitaciones
 
