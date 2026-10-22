@@ -34,6 +34,7 @@ python -m unittest discover -s tests
 
 En Windows, activa el entorno con `.venv\Scripts\activate`. Para usar JSON, cambia la entrada a `data/productos.json`. La aplicación crea `outputs/` con resultados; agrega `--sin-graficos` para omitir imágenes o `--salida RUTA` para elegir otra carpeta.
 Si la entrada no se puede leer, por ejemplo porque el archivo no existe, se muestra un mensaje de error claro sin traceback.
+CSV y JSON deben incluir todos los campos del esquema; los valores nutricionales pueden estar vacíos, pero no se pueden omitir las columnas o claves.
 
 Parámetros disponibles:
 

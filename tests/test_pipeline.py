@@ -119,6 +119,52 @@ class PipelineNutricionalTests(unittest.TestCase):
             ):
                 FuenteJSON().cargar(ruta_json)
 
+    def test_csv_sin_columna_nutricional_se_rechaza_al_leer(self):
+        with tempfile.TemporaryDirectory() as directorio:
+            ruta_csv = Path(directorio) / "productos.csv"
+            ruta_csv.write_text(
+                "codigo,nombre,categoria\n12345678,Producto,Snacks\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(
+                ValueError, "Faltan columnas esperadas en el CSV:.*energia_kcal_100g"
+            ):
+                FuenteCSV().cargar(ruta_csv)
+
+    def test_json_sin_columnas_nutricionales_se_rechaza_al_leer(self):
+        with tempfile.TemporaryDirectory() as directorio:
+            ruta_json = Path(directorio) / "productos.json"
+            ruta_json.write_text(
+                json.dumps([{"codigo": "12345678", "nombre": "Producto", "categoria": "Snacks"}]),
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(
+                ValueError, "Faltan columnas esperadas en el registro 1 del JSON"
+            ):
+                FuenteJSON().cargar(ruta_json)
+
+    def test_entrada_sin_columnas_obligatorias_muestra_error_claro(self):
+        with tempfile.TemporaryDirectory() as directorio:
+            ruta_csv = Path(directorio) / "productos.csv"
+            ruta_csv.write_text(
+                "codigo,nombre,categoria\n12345678,Producto,Snacks\n",
+                encoding="utf-8",
+            )
+            salida_error = io.StringIO()
+            with (
+                patch("sys.argv", ["main", "--entrada", str(ruta_csv)]),
+                contextlib.redirect_stderr(salida_error),
+                self.assertRaises(SystemExit) as resultado,
+            ):
+                main()
+
+        self.assertEqual(resultado.exception.code, 2)
+        self.assertIn("Faltan columnas esperadas", salida_error.getvalue())
+        self.assertIn("energia_kcal_100g", salida_error.getvalue())
+        self.assertNotIn("Traceback", salida_error.getvalue())
+
     def test_extension_no_soportada_se_rechaza(self):
         with self.assertRaisesRegex(ValueError, "formato de entrada debe ser CSV o JSON"):
             fuente_desde_ruta(Path("productos.xlsx"))
