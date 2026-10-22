@@ -4,19 +4,36 @@
 **Materia:** Programación Orientada a Datos  
 **Trabajo:** TP2 individual
 
-## Inicio rápido
+## 3. Instalación y ejecución
 
-Desde la carpeta `proyecto/`, instala las dependencias y ejecuta:
+Clona el repositorio y entra en `proyecto/`, donde se encuentran `requirements.txt`, `src/` y `tests/`:
 
 ```bash
+git clone https://github.com/santinarbe-blip/TP-2-Santiago-Narbe-Nutricion.git
+cd TP-2-Santiago-Narbe-Nutricion/proyecto
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-python -m src.main --entrada data/productos.csv --sin-graficos
-python -m unittest discover -s tests
 ```
 
-En Windows, activa el entorno con `.venv\Scripts\activate`. La ejecución normal crea `outputs/` con tablas, filas rechazadas y gráficos; `--sin-graficos` omite las imágenes.
+En Windows, activa el entorno con `.venv\Scripts\activate` en lugar de `source .venv/bin/activate`.
+
+### Ejecutar la aplicación
+
+La categoría debe ser una de estas opciones: `Cereales`, `Bebidas`, `Lácteos`, `Snacks` o `Conservas`.
+
+```bash
+python -m src.main --entrada data/productos.csv --categoria Snacks
+python -m src.main --entrada data/productos.json --categoria Snacks
+```
+
+La ejecución crea `outputs/` con tablas, filas rechazadas y gráficos. Para omitir los gráficos, agrega `--sin-graficos`.
+
+### Ejecutar las pruebas
+
+```bash
+python -m unittest discover -s tests -v
+```
 
 ## Problema y solución
 
@@ -39,16 +56,28 @@ Los resultados describen únicamente este conjunto sintético; no permiten gener
 
 Cada fila representa una ficha de producto. Se utilizan código EAN como texto, nombre, categoría, energía en kcal/100 g y nutrientes en g/100 g. El código se valida con una expresión regular para EAN de 8 o 13 dígitos; esto valida el formato, no el dígito de control.
 
-## Flujo y decisiones
+## 4. Flujo de procesamiento
 
-El programa lee CSV o JSON mediante una interfaz común, inspecciona cada registro y normaliza valores numéricos. Conserva nutrientes ausentes como valores nulos, los representa como “no disponible” y los excluye solo de los cálculos que necesitan ese dato. Rechaza identificadores obligatorios incompletos, códigos inválidos o repetidos y valores imposibles; el motivo queda en `outputs/rechazos.csv`. Las cantidades faltantes por campo se guardan en `outputs/faltantes.csv`.
+El flujo de procesamiento es:
+
+**leer → inspeccionar y validar → limpiar y transformar → analizar → comunicar**
+
+| Etapa | Qué hace | Dónde está |
+|---|---|---|
+| Leer | Carga CSV o JSON y convierte cada fila/objeto en un registro con la misma estructura. | `src/fuentes.py` |
+| Inspeccionar y validar | Comprueba campos obligatorios, formato del código, valores numéricos y rangos de plausibilidad. | `src/pipeline.py` |
+| Limpiar y transformar | Rechaza registros inválidos y códigos duplicados; normaliza nutrientes a números y conserva los faltantes como nulos. | `src/pipeline.py` |
+| Analizar | Filtra por categoría, ordena por el nutriente elegido y calcula resúmenes por categoría. | `src/pipeline.py` |
+| Comunicar | Imprime la comparación en consola y exporta tablas, faltantes, rechazos y gráficos. | `src/main.py`; archivos en `outputs/` por defecto |
+
+El directorio de resultados se puede cambiar con `--salida`. Los nutrientes ausentes se representan como “no disponible” en las salidas que muestran valores y se excluyen solo de los cálculos que requieren ese dato. El motivo de cada registro rechazado queda en `outputs/rechazos.csv`; las cantidades faltantes por campo se guardan en `outputs/faltantes.csv`.
 
 Los valores vacíos nunca se convierten en cero. Se rechazan nutrientes negativos, por encima de 100 g/100 g, energía por encima de 900 kcal/100 g, azúcares mayores que carbohidratos o grasas saturadas mayores que grasas totales. Son reglas de plausibilidad para este ejercicio, no una validación regulatoria de etiquetado.
 
-## Uso
+## Otros ejemplos de uso
 
 ```bash
-python -m src.main --entrada data/productos.csv
+python -m src.main --entrada data/productos.csv --nutriente azucares
 python -m src.main --entrada data/productos.json --categoria Snacks --nutriente azucares
 python -m src.main --entrada data/productos.csv --nutriente sal --sin-graficos
 python -m src.generar_datos
