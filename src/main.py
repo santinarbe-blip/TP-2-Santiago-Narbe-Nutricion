@@ -75,7 +75,15 @@ def main() -> None:
         na_rep="no disponible",
     )
     if not argumentos.sin_graficos:
-        generar_graficos(comparacion, faltantes, argumentos.salida)
+        generar_graficos(
+            comparacion,
+            faltantes,
+            argumentos.salida,
+            argumentos.nutriente,
+            argumentos.categoria,
+            len(comparacion),
+            len(productos),
+        )
 
     print(f"Registros leídos: {len(registros)}")
     print(f"Productos válidos: {len(productos)}")

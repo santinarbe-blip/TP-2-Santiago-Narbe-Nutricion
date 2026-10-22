@@ -12,6 +12,7 @@ import pandas as pd
 
 from src.fuentes import FuenteCSV, FuenteJSON, fuente_desde_ruta
 from src.generar_datos import generar_registros
+from src.graficos import generar_graficos
 from src.main import main
 from src.pipeline import (
     comparar_etiquetas,
@@ -22,6 +23,63 @@ from src.pipeline import (
 
 
 class PipelineNutricionalTests(unittest.TestCase):
+    def test_grafico_usa_nutriente_categoria_leyenda_y_valores(self):
+        import matplotlib.pyplot as plt
+
+        ejes = []
+        subplots_original = plt.subplots
+
+        def registrar_subplot(*args, **kwargs):
+            figura, eje = subplots_original(*args, **kwargs)
+            ejes.append(eje)
+            return figura, eje
+
+        comparacion = pd.DataFrame(
+            [
+                {
+                    "nombre": "Producto B",
+                    "categoria": "Bebidas",
+                    "sal_g_100g": 0.8,
+                    "azucares_g_100g": 2.0,
+                    "grasas_g_100g": 1.0,
+                },
+                {
+                    "nombre": "Producto A",
+                    "categoria": "Snacks",
+                    "sal_g_100g": 0.2,
+                    "azucares_g_100g": 3.0,
+                    "grasas_g_100g": 2.0,
+                },
+            ]
+        )
+        with tempfile.TemporaryDirectory() as directorio:
+            with patch(
+                "matplotlib.pyplot.subplots", side_effect=registrar_subplot
+            ):
+                generar_graficos(
+                    comparacion,
+                    [{"campo": "sal_g_100g", "faltantes": 0}],
+                    Path(directorio),
+                    "sal",
+                    None,
+                    2,
+                    2,
+                )
+            eje = ejes[0]
+
+            self.assertTrue((Path(directorio) / "grafico_comparacion.png").is_file())
+            self.assertIn("Sal", eje.get_title())
+            self.assertIn("todas las categorías", eje.get_title())
+            self.assertIn("2 productos", eje.get_title())
+            self.assertEqual(eje.get_ylabel(), "")
+            self.assertEqual(list(eje.containers[0].datavalues), [0.2, 0.8])
+            self.assertEqual(
+                {texto.get_text() for texto in eje.get_legend().get_texts()},
+                {"Bebidas", "Snacks"},
+            )
+            self.assertIn("0.2", {texto.get_text() for texto in eje.texts})
+            plt.close("all")
+
     def test_entrada_inexistente_muestra_error_claro_sin_traceback(self):
         salida_error = io.StringIO()
         with (

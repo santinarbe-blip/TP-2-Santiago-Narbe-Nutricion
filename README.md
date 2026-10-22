@@ -54,7 +54,7 @@ Las categorías son `Cereales`, `Bebidas`, `Lácteos`, `Snacks` y `Conservas`. L
 | Leer | Carga CSV o JSON con una estructura común (`src/fuentes.py`). |
 | Validar y limpiar | Comprueba identificadores, números, rangos y duplicados; conserva faltantes como nulos (`src/pipeline.py`). |
 | Analizar | Filtra por categoría, ordena por nutriente y calcula resúmenes (`src/pipeline.py`). |
-| Comunicar | Muestra resultados y exporta tablas, rechazos, faltantes y gráficos (`src/main.py`). |
+| Comunicar | Muestra resultados y exporta tablas, rechazos, faltantes y gráficos (`src/main.py`, `src/graficos.py`). |
 
 Los conteos de faltantes (`faltantes.csv` y su gráfico) se calculan únicamente sobre productos válidos, igual que los resúmenes por categoría; los rechazados se informan por separado en `rechazos.csv`. Su columna `registro` indica la posición, empezando en 1, en la secuencia de entrada tanto para CSV como para JSON. Los faltantes no se imputan como cero y se excluyen solo de los cálculos que necesitan ese valor. Las reglas de plausibilidad no son una validación regulatoria de etiquetado.
 
@@ -64,13 +64,13 @@ Los conteos de faltantes (`faltantes.csv` y su gráfico) se calculan únicamente
 .
 ├── data/       # datos de ejemplo y documentación
 ├── docs/       # ejemplo de gráfico
-├── src/        # fuentes, modelo, pipeline, aplicación y generador
+├── src/        # fuentes, modelo, pipeline, aplicación, gráficos y generador
 ├── tests/      # pruebas automatizadas
 ├── outputs/    # resultados generados; no se versionan
 └── README.md
 ```
 
-`FuenteCSV` y `FuenteJSON` implementan la interfaz `FuenteDatos`. `ProductoNutricional` modela una ficha; `pipeline.py` valida y compara; `main.py` coordina argumentos, exportaciones y gráficos.
+`FuenteCSV` y `FuenteJSON` implementan la interfaz `FuenteDatos`. `ProductoNutricional` modela una ficha; `pipeline.py` valida y compara; `main.py` coordina argumentos y exportaciones; `graficos.py` genera las visualizaciones.
 
 ## 6. Conceptos del curso aplicados
 
@@ -115,7 +115,7 @@ Ordenados por azucares (menor a mayor):
 2000000000039 Crackers 03    Snacks             35.4
 ```
 
-El gráfico de azúcares por producto está disponible en [docs/ejemplo_azucares_snacks.png](docs/ejemplo_azucares_snacks.png). Cada barra representa gramos de azúcares por 100 g: se leen los productos en el eje vertical y la cantidad en el horizontal; una barra más larga indica un valor mayor, no una evaluación de salud.
+El gráfico generado por `--nutriente` está disponible para este ejemplo en [docs/ejemplo_azucares_snacks.png](docs/ejemplo_azucares_snacks.png). El nutriente elegido determina las barras, sus unidades y el título. Cada barra representa gramos de azúcares por 100 g; los valores aparecen junto a las barras. Si se comparan varias categorías, los colores y la leyenda las distinguen. Una barra más larga indica un valor mayor, no una evaluación de salud.
 
 ## 9. Interpretación y limitaciones
 
