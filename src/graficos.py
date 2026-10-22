@@ -96,6 +96,29 @@ def graficar_distribucion_categorias(
     plt.close(figura)
 
 
+def graficar_rechazos(rechazos: list[dict], salida: Path) -> None:
+    """Grafica la cantidad de registros rechazados agrupados por motivo."""
+    import matplotlib.pyplot as plt
+
+    conteos = pd.Series(
+        [rechazo["motivo"] for rechazo in rechazos], dtype="string"
+    ).value_counts()
+    figura, eje = plt.subplots(figsize=(9, max(4, len(conteos) * 0.5)))
+    if conteos.empty:
+        eje.text(0.5, 0.5, "No hay registros rechazados", ha="center", va="center")
+    else:
+        barras = eje.barh(conteos.index, conteos.values, color="#c76d4b")
+        eje.invert_yaxis()
+        eje.bar_label(barras, padding=4)
+        eje.set_xlim(right=float(conteos.max()) * 1.2)
+    eje.set_title(f"Registros rechazados por motivo ({len(rechazos)} registros)")
+    eje.set_xlabel("Cantidad de registros")
+    eje.set_ylabel("Motivo")
+    figura.tight_layout()
+    figura.savefig(salida / "grafico_rechazos_por_motivo.png", dpi=150)
+    plt.close(figura)
+
+
 def generar_graficos(
     comparacion: pd.DataFrame,
     faltantes: list[dict],
@@ -106,8 +129,9 @@ def generar_graficos(
     total_validos: int,
     resumen_categorias: list[dict],
     productos: list[ProductoNutricional],
+    rechazos: list[dict],
 ) -> None:
-    """Genera gráficos comparativos, distribuciones, promedios y faltantes."""
+    """Genera gráficos de análisis nutricional, faltantes y rechazos."""
     import matplotlib.pyplot as plt
     from matplotlib.patches import Patch
 
@@ -212,3 +236,4 @@ def generar_graficos(
     plt.close(figura)
     graficar_promedios_categorias(resumen_categorias, total_validos, salida)
     graficar_distribucion_categorias(productos, nutriente, salida)
+    graficar_rechazos(rechazos, salida)

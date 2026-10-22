@@ -83,6 +83,11 @@ class PipelineNutricionalTests(unittest.TestCase):
                         },
                     ],
                     productos,
+                    [
+                        {"motivo": "código inválido"},
+                        {"motivo": "código inválido"},
+                        {"motivo": "valor fuera de rango"},
+                    ],
                 )
             eje = ejes[0]
 
@@ -92,6 +97,9 @@ class PipelineNutricionalTests(unittest.TestCase):
             )
             self.assertTrue(
                 (Path(directorio) / "grafico_distribucion_categoria.png").is_file()
+            )
+            self.assertTrue(
+                (Path(directorio) / "grafico_rechazos_por_motivo.png").is_file()
             )
             self.assertIn("Sal", eje.get_title())
             self.assertIn("todas las categorías", eje.get_title())
@@ -113,6 +121,8 @@ class PipelineNutricionalTests(unittest.TestCase):
                 [etiqueta.get_text() for etiqueta in ejes[4].get_xticklabels()],
                 ["Bebidas\n(n=1)", "Snacks\n(n=1)"],
             )
+            self.assertIn("3 registros", ejes[5].get_title())
+            self.assertEqual(list(ejes[5].containers[0].datavalues), [2, 1])
             plt.close("all")
 
     def test_entrada_inexistente_muestra_error_claro_sin_traceback(self):

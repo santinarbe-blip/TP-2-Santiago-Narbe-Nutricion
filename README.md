@@ -121,6 +121,8 @@ La ejecución también genera `outputs/grafico_promedios_categoria.png`, que com
 
 `outputs/grafico_distribucion_categoria.png` muestra un boxplot del nutriente seleccionado por categoría. La caja y los bigotes resumen la distribución de los valores disponibles; cada etiqueta indica el tamaño del grupo y los faltantes no se imputan.
 
+`outputs/grafico_rechazos_por_motivo.png` agrupa los registros rechazados por motivo. Las barras muestran cuántos registros corresponden a cada motivo y el título indica el total de rechazos.
+
 ## 9. Interpretación y limitaciones
 
 Los resultados describen únicamente este conjunto sintético. Permiten comparar valores generados dentro de una categoría, pero no generalizar a productos reales ni al mercado. Ordenar por un nutriente no determina si un alimento es saludable o adecuado para una persona, y no permite hacer recomendaciones médicas o dietarias. La energía también es un cálculo derivado de nutrientes simulados.
