@@ -27,6 +27,7 @@ NUTRIENTES = (
 def generar_graficos(
     comparacion: pd.DataFrame, faltantes: list[dict], salida: Path
 ) -> None:
+    """Genera gráficos de comparación nutricional y datos faltantes."""
     import matplotlib.pyplot as plt
 
     salida.mkdir(parents=True, exist_ok=True)
@@ -102,6 +103,7 @@ def generar_graficos(
 
 
 def construir_parser() -> argparse.ArgumentParser:
+    """Construye el analizador de argumentos de línea de comandos."""
     parser = argparse.ArgumentParser(
         description="Compara etiquetas nutricionales sintéticas por cada 100 g."
     )
@@ -114,6 +116,7 @@ def construir_parser() -> argparse.ArgumentParser:
 
 
 def main() -> None:
+    """Ejecuta el análisis de etiquetas a partir de los argumentos recibidos."""
     parser = construir_parser()
     argumentos = parser.parse_args()
     try:

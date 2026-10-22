@@ -35,6 +35,7 @@ PERFILES = {
 
 
 def generar_registros() -> list[dict]:
+    """Genera el conjunto sintético reproducible de productos."""
     azar = random.Random(2026)
     registros = []
     consecutivo = 1
@@ -86,6 +87,7 @@ def generar_registros() -> list[dict]:
 
 
 def main() -> None:
+    """Genera y guarda los datos sintéticos en CSV y JSON."""
     DIRECTORIO_DATOS.mkdir(parents=True, exist_ok=True)
     registros = generar_registros()
     with (DIRECTORIO_DATOS / "productos.csv").open(

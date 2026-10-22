@@ -1,4 +1,5 @@
 import contextlib
+import csv
 import io
 import json
 import tempfile
@@ -68,8 +69,6 @@ class PipelineNutricionalTests(unittest.TestCase):
         registro["codigo"] = "01234567"
         with tempfile.TemporaryDirectory() as directorio:
             ruta_csv = Path(directorio) / "producto.csv"
-            import csv
-
             with ruta_csv.open("w", newline="", encoding="utf-8") as archivo:
                 escritor = csv.DictWriter(archivo, fieldnames=registro.keys())
                 escritor.writeheader()
@@ -194,8 +193,6 @@ class PipelineNutricionalTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directorio:
             ruta_csv = Path(directorio) / "productos.csv"
             salida = Path(directorio) / "outputs"
-            import csv
-
             with ruta_csv.open("w", newline="", encoding="utf-8") as archivo:
                 escritor = csv.DictWriter(archivo, fieldnames=registros[0].keys())
                 escritor.writeheader()
@@ -254,8 +251,6 @@ class PipelineNutricionalTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directorio:
             ruta_csv = Path(directorio) / "productos.csv"
             ruta_json = Path(directorio) / "productos.json"
-            import csv
-
             with ruta_csv.open("w", newline="", encoding="utf-8") as archivo:
                 escritor = csv.DictWriter(archivo, fieldnames=registros[0].keys())
                 escritor.writeheader()

@@ -20,6 +20,7 @@ PATRON_EAN = re.compile(r"(?:[0-9]{8}|[0-9]{13})\Z")
 
 
 def normalizar_ficha(registro: dict) -> ProductoNutricional:
+    """Valida y convierte un registro en una ficha nutricional."""
     faltantes = [campo for campo in CAMPOS_IDENTIFICACION if campo not in registro]
     if faltantes:
         raise ValueError(f"faltan campos obligatorios: {', '.join(faltantes)}")
@@ -66,6 +67,7 @@ def normalizar_ficha(registro: dict) -> ProductoNutricional:
 
 
 def limpiar_productos(registros: list[dict]) -> tuple[list[ProductoNutricional], list[dict]]:
+    """Separa productos válidos y registros rechazados con su motivo."""
     productos = []
     rechazos = []
     codigos_vistos = set()
@@ -92,6 +94,7 @@ def limpiar_productos(registros: list[dict]) -> tuple[list[ProductoNutricional],
 def comparar_etiquetas(
     productos: list[ProductoNutricional], categoria: str | None, nutriente: str
 ) -> pd.DataFrame:
+    """Filtra productos por categoría y los ordena por nutriente."""
     columna = columna_nutriente(nutriente)
     registros = [producto.como_registro() for producto in productos]
     tabla = pd.DataFrame(registros)
@@ -105,6 +108,7 @@ def comparar_etiquetas(
 
 
 def resumir_faltantes(registros: list[dict]) -> list[dict]:
+    """Cuenta los valores ausentes por campo en los registros recibidos."""
     campos = (*CAMPOS_IDENTIFICACION, *CAMPOS_NUMERICOS)
     resumen = []
     for campo in campos:
@@ -118,6 +122,7 @@ def resumir_faltantes(registros: list[dict]) -> list[dict]:
 
 
 def resumir_categorias(productos: list[ProductoNutricional]) -> list[dict]:
+    """Calcula promedios nutricionales agrupados por categoría."""
     tabla = pd.DataFrame([producto.como_registro() for producto in productos])
     if tabla.empty:
         return []

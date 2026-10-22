@@ -27,6 +27,7 @@ class FuenteDatos(ABC):
 
 class FuenteCSV(FuenteDatos):
     def cargar(self, ruta: Path) -> list[dict]:
+        """Lee registros CSV y valida que incluyan todos los campos esperados."""
         tabla = pd.read_csv(ruta, dtype={"codigo": str}, keep_default_na=False)
         _validar_campos(set(tabla.columns), "el CSV")
         return tabla.to_dict(orient="records")
@@ -34,6 +35,7 @@ class FuenteCSV(FuenteDatos):
 
 class FuenteJSON(FuenteDatos):
     def cargar(self, ruta: Path) -> list[dict]:
+        """Lee registros JSON y valida su estructura y campos requeridos."""
         with ruta.open(encoding="utf-8") as archivo:
             registros = json.load(archivo)
         if not isinstance(registros, list) or not all(
@@ -46,6 +48,7 @@ class FuenteJSON(FuenteDatos):
 
 
 def fuente_desde_ruta(ruta: Path) -> FuenteDatos:
+    """Selecciona la fuente de datos según la extensión del archivo."""
     extension = ruta.suffix.lower()
     if extension == ".csv":
         return FuenteCSV()

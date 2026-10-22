@@ -14,6 +14,7 @@ COLUMNAS_NUTRIENTES = {
 
 
 def columna_nutriente(nutriente: str) -> str:
+    """Devuelve el nombre de campo asociado a un nutriente."""
     try:
         return COLUMNAS_NUTRIENTES[nutriente]
     except KeyError:
@@ -35,7 +36,9 @@ class ProductoNutricional:
     sal_g_100g: float | None
 
     def obtener_nutriente(self, nutriente: str) -> float | None:
+        """Devuelve el valor del nutriente solicitado."""
         return getattr(self, columna_nutriente(nutriente))
 
     def como_registro(self) -> dict:
+        """Convierte la ficha en un diccionario de campos."""
         return asdict(self)
