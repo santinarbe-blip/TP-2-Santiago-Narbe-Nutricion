@@ -61,6 +61,13 @@ class PipelineNutricionalTests(unittest.TestCase):
         self.assertEqual(productos, [])
         self.assertIn("8 o 13 dígitos", rechazos[0]["motivo"])
 
+    def test_codigo_con_digitos_arabigo_indicos_se_rechaza(self):
+        registro = dict(generar_registros()[0])
+        registro["codigo"] = "١٢٣٤٥٦٧٨٩٠١٢٣"
+
+        with self.assertRaisesRegex(ValueError, "8 o 13 dígitos"):
+            normalizar_ficha(registro)
+
     def test_azucares_mayores_que_carbohidratos_se_rechazan(self):
         registro = dict(generar_registros()[0])
         registro["carbohidratos_g_100g"] = 10

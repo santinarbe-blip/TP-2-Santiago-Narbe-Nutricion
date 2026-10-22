@@ -16,7 +16,7 @@ CAMPOS_NUMERICOS = (
     "sal_g_100g",
 )
 CAMPOS_IDENTIFICACION = ("codigo", "nombre", "categoria")
-PATRON_EAN = re.compile(r"(?:\d{8}|\d{13})\Z")
+PATRON_EAN = re.compile(r"(?:[0-9]{8}|[0-9]{13})\Z")
 
 
 def normalizar_ficha(registro: dict) -> ProductoNutricional:
