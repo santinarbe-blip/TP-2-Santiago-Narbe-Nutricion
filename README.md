@@ -16,7 +16,7 @@ Las etiquetas pueden expresar cantidades de formas distintas y un dato ausente n
 
 ## 2. Datos y procedencia
 
-`proyecto/data/productos.csv` y `proyecto/data/productos.json` contienen representaciones equivalentes de un conjunto sintético generado con semilla fija. Incluyen 60 productos válidos, cuatro nutrientes ausentes deliberadamente y dos registros inválidos. No se usan datos personales ni fuentes externas. El esquema, las unidades y la generación se describen en [data/README.md](proyecto/data/README.md).
+`data/productos.csv` y `data/productos.json` contienen representaciones equivalentes de un conjunto sintético generado con semilla fija. Incluyen 60 productos válidos, cuatro nutrientes ausentes deliberadamente y dos registros inválidos. No se usan datos personales ni fuentes externas. El esquema, las unidades y la generación se describen en [data/README.md](data/README.md).
 
 Cada registro contiene código EAN (texto), nombre, categoría, energía (kcal/100 g) y nutrientes (g/100 g). El código se valida por formato (8 o 13 dígitos), no por dígito de control.
 
@@ -25,7 +25,6 @@ Cada registro contiene código EAN (texto), nombre, categoría, energía (kcal/1
 Desde la raíz del repositorio:
 
 ```bash
-cd proyecto
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -61,7 +60,7 @@ Los faltantes no se imputan como cero y se excluyen solo de los cálculos que ne
 ## 5. Organización del código
 
 ```text
-proyecto/
+.
 ├── data/       # datos de ejemplo y documentación
 ├── docs/       # ejemplo de gráfico
 ├── src/        # fuentes, modelo, pipeline, aplicación y generador
@@ -93,7 +92,7 @@ Son reglas didácticas de plausibilidad: no certifican cumplimiento regulatorio 
 
 Al ejecutar `python -m src.main --entrada data/productos.csv --categoria Snacks --nutriente azucares --sin-graficos` se leen 62 registros: 60 productos válidos y 2 filas rechazadas. Se comparan 12 productos; Galletas 09 presenta el menor valor disponible de azúcares (5,2 g/100 g).
 
-El gráfico correspondiente está disponible en [docs/ejemplo_azucares_snacks.png](proyecto/docs/ejemplo_azucares_snacks.png). Las barras ordenan los productos por el valor disponible; no representan una evaluación global de salud.
+El gráfico correspondiente está disponible en [docs/ejemplo_azucares_snacks.png](docs/ejemplo_azucares_snacks.png). Las barras ordenan los productos por el valor disponible; no representan una evaluación global de salud.
 
 ## 9. Interpretación y limitaciones
 

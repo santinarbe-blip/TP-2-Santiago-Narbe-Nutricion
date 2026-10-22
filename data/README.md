@@ -5,7 +5,7 @@
 | Campo | Detalle |
 |---|---|
 | Fuente | Datos sintéticos generados por `src/generar_datos.py`; no se utilizó Open Food Facts ni otra fuente externa. |
-| URL o procedimiento | Desde `proyecto/`, ejecutar `python -m src.generar_datos` (o `python src/generar_datos.py`). Usa la semilla fija `2026` y crea `data/productos.csv` y `data/productos.json` con el mismo contenido. |
+| URL o procedimiento | Desde la raíz del repositorio, ejecutar `python -m src.generar_datos` (o `python src/generar_datos.py`). Usa la semilla fija `2026` y crea `data/productos.csv` y `data/productos.json` con el mismo contenido. |
 | Responsable | Santiago Narbe, autor del trabajo. |
 | Licencia | Datos sintéticos propios, sin licencia de terceros aplicable. |
 | Fecha de generación | 2026-10-21 (conjunto incluido en el proyecto). |
