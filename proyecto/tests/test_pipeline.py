@@ -1,16 +1,38 @@
+import contextlib
+import io
 import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import pandas as pd
 
-from src.fuentes import FuenteCSV, FuenteJSON
+from src.fuentes import FuenteCSV, FuenteJSON, fuente_desde_ruta
 from src.generar_datos import generar_registros
-from src.pipeline import comparar_etiquetas, limpiar_productos, resumir_faltantes
+from src.main import main
+from src.pipeline import (
+    comparar_etiquetas,
+    limpiar_productos,
+    normalizar_ficha,
+    resumir_faltantes,
+)
 
 
 class PipelineNutricionalTests(unittest.TestCase):
+    def test_entrada_inexistente_muestra_error_claro_sin_traceback(self):
+        salida_error = io.StringIO()
+        with (
+            patch("sys.argv", ["main", "--entrada", "data/noexiste.csv"]),
+            contextlib.redirect_stderr(salida_error),
+            self.assertRaises(SystemExit) as resultado,
+        ):
+            main()
+
+        self.assertEqual(resultado.exception.code, 2)
+        self.assertIn("No se pudo leer la entrada 'data/noexiste.csv'", salida_error.getvalue())
+        self.assertNotIn("Traceback", salida_error.getvalue())
+
     def test_comparacion_ordena_y_filtra_categoria(self):
         productos, rechazos = limpiar_productos(generar_registros())
         tabla = comparar_etiquetas(productos, "Snacks", "azucares")
@@ -28,6 +50,65 @@ class PipelineNutricionalTests(unittest.TestCase):
 
         self.assertEqual(len(productos), 2)
         self.assertEqual(rechazos[0]["motivo"], "código duplicado")
+
+    def test_codigo_de_siete_digitos_se_rechaza(self):
+        registro = dict(generar_registros()[0])
+        registro["codigo"] = "1234567"
+
+        productos, rechazos = limpiar_productos([registro])
+
+        self.assertEqual(productos, [])
+        self.assertIn("8 o 13 dígitos", rechazos[0]["motivo"])
+
+    def test_azucares_mayores_que_carbohidratos_se_rechazan(self):
+        registro = dict(generar_registros()[0])
+        registro["carbohidratos_g_100g"] = 10
+        registro["azucares_g_100g"] = 11
+
+        productos, rechazos = limpiar_productos([registro])
+
+        self.assertEqual(productos, [])
+        self.assertEqual(
+            rechazos[0]["motivo"], "azúcares no pueden superar carbohidratos"
+        )
+
+    def test_valor_negativo_se_rechaza(self):
+        registro = dict(generar_registros()[0])
+        registro["proteinas_g_100g"] = -1
+
+        productos, rechazos = limpiar_productos([registro])
+
+        self.assertEqual(productos, [])
+        self.assertIn("fuera del rango permitido", rechazos[0]["motivo"])
+
+    def test_nutriente_mayor_que_cien_se_rechaza(self):
+        registro = dict(generar_registros()[0])
+        registro["fibra_g_100g"] = 101
+
+        productos, rechazos = limpiar_productos([registro])
+
+        self.assertEqual(productos, [])
+        self.assertIn("no puede superar 100 g/100 g", rechazos[0]["motivo"])
+
+    def test_obtener_nutriente_desconocido_lanza_error(self):
+        producto = normalizar_ficha(generar_registros()[0])
+
+        with self.assertRaisesRegex(ValueError, "Nutriente desconocido: vitamina_c"):
+            producto.obtener_nutriente("vitamina_c")
+
+    def test_json_que_no_es_una_lista_se_rechaza(self):
+        with tempfile.TemporaryDirectory() as directorio:
+            ruta_json = Path(directorio) / "productos.json"
+            ruta_json.write_text('{"producto": "ejemplo"}', encoding="utf-8")
+
+            with self.assertRaisesRegex(
+                ValueError, "El JSON debe contener una lista de objetos"
+            ):
+                FuenteJSON().cargar(ruta_json)
+
+    def test_extension_no_soportada_se_rechaza(self):
+        with self.assertRaisesRegex(ValueError, "formato de entrada debe ser CSV o JSON"):
+            fuente_desde_ruta(Path("productos.xlsx"))
 
     def test_nutrientes_ausentes_se_conservan_como_no_disponibles(self):
         registro = dict(generar_registros()[0])

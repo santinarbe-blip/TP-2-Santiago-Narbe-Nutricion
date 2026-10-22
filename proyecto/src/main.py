@@ -112,8 +112,13 @@ def construir_parser() -> argparse.ArgumentParser:
 
 
 def main() -> None:
-    argumentos = construir_parser().parse_args()
-    registros = fuente_desde_ruta(argumentos.entrada).cargar(argumentos.entrada)
+    parser = construir_parser()
+    argumentos = parser.parse_args()
+    try:
+        registros = fuente_desde_ruta(argumentos.entrada).cargar(argumentos.entrada)
+    except (OSError, ValueError, pd.errors.ParserError) as error:
+        parser.error(f"No se pudo leer la entrada '{argumentos.entrada}': {error}")
+
     faltantes = resumir_faltantes(registros)
     productos, rechazos = limpiar_productos(registros)
     comparacion = comparar_etiquetas(
