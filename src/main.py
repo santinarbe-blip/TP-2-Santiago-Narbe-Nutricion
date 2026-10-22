@@ -137,7 +137,7 @@ def main() -> None:
         index=False,
         na_rep="no disponible",
     )
-    pd.DataFrame(rechazos, columns=["fila", "codigo", "motivo"]).to_csv(
+    pd.DataFrame(rechazos, columns=["registro", "codigo", "motivo"]).to_csv(
         argumentos.salida / "rechazos.csv", index=False
     )
     pd.DataFrame(faltantes).to_csv(

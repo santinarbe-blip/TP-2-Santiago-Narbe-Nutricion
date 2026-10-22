@@ -51,6 +51,8 @@ class PipelineNutricionalTests(unittest.TestCase):
 
         self.assertEqual(len(productos), 2)
         self.assertEqual(rechazos[0]["motivo"], "código duplicado")
+        self.assertEqual(rechazos[0]["registro"], 3)
+        self.assertNotIn("fila", rechazos[0])
 
     def test_codigo_de_siete_digitos_se_rechaza(self):
         registro = dict(generar_registros()[0])
@@ -201,6 +203,8 @@ class PipelineNutricionalTests(unittest.TestCase):
             rechazos = pd.read_csv(salida / "rechazos.csv")
 
         self.assertEqual(len(rechazos), 1)
+        self.assertEqual(rechazos.loc[0, "registro"], 2)
+        self.assertNotIn("fila", rechazos.columns)
         self.assertEqual(
             faltantes.loc[
                 faltantes["campo"] == "proteinas_g_100g", "faltantes"

@@ -69,7 +69,7 @@ def limpiar_productos(registros: list[dict]) -> tuple[list[ProductoNutricional],
     productos = []
     rechazos = []
     codigos_vistos = set()
-    for numero_fila, registro in enumerate(registros, start=2):
+    for numero_registro, registro in enumerate(registros, start=1):
         codigo = str(registro.get("codigo", "")).strip()
         try:
             producto = normalizar_ficha(registro)
@@ -77,7 +77,11 @@ def limpiar_productos(registros: list[dict]) -> tuple[list[ProductoNutricional],
                 raise ValueError("código duplicado")
         except ValueError as error:
             rechazos.append(
-                {"fila": numero_fila, "codigo": codigo, "motivo": str(error)}
+                {
+                    "registro": numero_registro,
+                    "codigo": codigo,
+                    "motivo": str(error),
+                }
             )
             continue
         productos.append(producto)
