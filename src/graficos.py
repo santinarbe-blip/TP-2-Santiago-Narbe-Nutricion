@@ -14,6 +14,52 @@ ETIQUETAS_NUTRIENTES = {
     "fibra": ("Fibra", "g/100 g"),
     "sal": ("Sal", "g/100 g"),
 }
+NUTRIENTES_PROMEDIO = (
+    ("azucares_g_100g", "Azúcares"),
+    ("fibra_g_100g", "Fibra"),
+    ("proteinas_g_100g", "Proteínas"),
+)
+
+
+def graficar_promedios_categorias(
+    resumen_categorias: list[dict], total_validos: int, salida: Path
+) -> None:
+    """Grafica los promedios de azúcares, fibra y proteínas por categoría."""
+    import matplotlib.pyplot as plt
+
+    tabla = pd.DataFrame(resumen_categorias)
+    figura, eje = plt.subplots(figsize=(9, 5))
+    posiciones = range(len(tabla))
+    ancho = 0.8 / len(NUTRIENTES_PROMEDIO)
+    for indice, (columna, etiqueta) in enumerate(NUTRIENTES_PROMEDIO):
+        valores = tabla[columna]
+        barras = eje.bar(
+            [
+                posicion + (indice - (len(NUTRIENTES_PROMEDIO) - 1) / 2) * ancho
+                for posicion in posiciones
+            ],
+            valores,
+            width=ancho,
+            label=etiqueta,
+        )
+        eje.bar_label(
+            barras,
+            labels=[
+                f"{valor:g}" if pd.notna(valor) else "" for valor in valores
+            ],
+            padding=2,
+        )
+    eje.set_xticks(list(posiciones), tabla["categoria"])
+    eje.set_title(
+        "Promedios de azúcares, fibra y proteínas por categoría "
+        f"({len(tabla)} categorías; {total_validos} productos)"
+    )
+    eje.set_xlabel("Categoría")
+    eje.set_ylabel("Promedio (g/100 g)")
+    eje.legend(title="Nutriente")
+    figura.tight_layout()
+    figura.savefig(salida / "grafico_promedios_categoria.png", dpi=150)
+    plt.close(figura)
 
 
 def generar_graficos(
@@ -24,8 +70,9 @@ def generar_graficos(
     categoria: str | None,
     cantidad_productos: int,
     total_validos: int,
+    resumen_categorias: list[dict],
 ) -> None:
-    """Genera gráficos de comparación nutricional y datos faltantes."""
+    """Genera gráficos de comparación, promedios por categoría y faltantes."""
     import matplotlib.pyplot as plt
     from matplotlib.patches import Patch
 
@@ -128,3 +175,4 @@ def generar_graficos(
     figura.tight_layout()
     figura.savefig(salida / "grafico_datos_faltantes.png", dpi=150)
     plt.close(figura)
+    graficar_promedios_categorias(resumen_categorias, total_validos, salida)

@@ -64,10 +64,27 @@ class PipelineNutricionalTests(unittest.TestCase):
                     None,
                     2,
                     2,
+                    [
+                        {
+                            "categoria": "Bebidas",
+                            "azucares_g_100g": 2.5,
+                            "fibra_g_100g": 0.5,
+                            "proteinas_g_100g": 3.0,
+                        },
+                        {
+                            "categoria": "Snacks",
+                            "azucares_g_100g": 6.0,
+                            "fibra_g_100g": 2.0,
+                            "proteinas_g_100g": 5.0,
+                        },
+                    ],
                 )
             eje = ejes[0]
 
             self.assertTrue((Path(directorio) / "grafico_comparacion.png").is_file())
+            self.assertTrue(
+                (Path(directorio) / "grafico_promedios_categoria.png").is_file()
+            )
             self.assertIn("Sal", eje.get_title())
             self.assertIn("todas las categorías", eje.get_title())
             self.assertIn("2 productos", eje.get_title())
@@ -78,6 +95,10 @@ class PipelineNutricionalTests(unittest.TestCase):
                 {"Bebidas", "Snacks"},
             )
             self.assertIn("0.2", {texto.get_text() for texto in eje.texts})
+            self.assertEqual(len(ejes[3].containers), 3)
+            self.assertEqual(
+                list(ejes[3].containers[0].datavalues), [2.5, 6.0]
+            )
             plt.close("all")
 
     def test_entrada_inexistente_muestra_error_claro_sin_traceback(self):

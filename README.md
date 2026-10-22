@@ -117,6 +117,8 @@ Ordenados por azucares (menor a mayor):
 
 El gráfico generado por `--nutriente` está disponible para este ejemplo en [docs/ejemplo_azucares_snacks.png](docs/ejemplo_azucares_snacks.png). El nutriente elegido determina las barras, sus unidades y el título. Cada barra representa gramos de azúcares por 100 g; los valores aparecen junto a las barras. Si se comparan varias categorías, los colores y la leyenda las distinguen. Una barra más larga indica un valor mayor, no una evaluación de salud.
 
+La ejecución también genera `outputs/grafico_promedios_categoria.png`, que compara por categoría los promedios de azúcares, fibra y proteínas. Sus barras agrupadas muestran gramos por 100 g; los valores se leen sobre cada barra.
+
 ## 9. Interpretación y limitaciones
 
 Los resultados describen únicamente este conjunto sintético. Permiten comparar valores generados dentro de una categoría, pero no generalizar a productos reales ni al mercado. Ordenar por un nutriente no determina si un alimento es saludable o adecuado para una persona, y no permite hacer recomendaciones médicas o dietarias. La energía también es un cálculo derivado de nutrientes simulados.

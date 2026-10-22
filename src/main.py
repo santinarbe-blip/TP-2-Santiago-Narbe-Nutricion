@@ -51,6 +51,7 @@ def main() -> None:
     faltantes = resumir_faltantes(
         [producto.como_registro() for producto in productos]
     )
+    resumen_categorias = resumir_categorias(productos)
     comparacion = comparar_etiquetas(
         productos, argumentos.categoria, argumentos.nutriente
     )
@@ -69,7 +70,7 @@ def main() -> None:
     pd.DataFrame(faltantes).to_csv(
         argumentos.salida / "faltantes.csv", index=False
     )
-    pd.DataFrame(resumir_categorias(productos)).to_csv(
+    pd.DataFrame(resumen_categorias).to_csv(
         argumentos.salida / "resumen_categorias.csv",
         index=False,
         na_rep="no disponible",
@@ -83,6 +84,7 @@ def main() -> None:
             argumentos.categoria,
             len(comparacion),
             len(productos),
+            resumen_categorias,
         )
 
     print(f"Registros leídos: {len(registros)}")
