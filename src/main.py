@@ -121,8 +121,10 @@ def main() -> None:
     except (OSError, ValueError, pd.errors.ParserError) as error:
         parser.error(f"No se pudo leer la entrada '{argumentos.entrada}': {error}")
 
-    faltantes = resumir_faltantes(registros)
     productos, rechazos = limpiar_productos(registros)
+    faltantes = resumir_faltantes(
+        [producto.como_registro() for producto in productos]
+    )
     comparacion = comparar_etiquetas(
         productos, argumentos.categoria, argumentos.nutriente
     )

@@ -165,6 +165,49 @@ class PipelineNutricionalTests(unittest.TestCase):
         self.assertIn("energia_kcal_100g", salida_error.getvalue())
         self.assertNotIn("Traceback", salida_error.getvalue())
 
+    def test_conteo_de_faltantes_excluye_registros_rechazados(self):
+        registros = [dict(registro) for registro in generar_registros()[:2]]
+        for registro in registros:
+            registro["proteinas_g_100g"] = ""
+        registros[1]["codigo"] = "1234567"
+
+        with tempfile.TemporaryDirectory() as directorio:
+            ruta_csv = Path(directorio) / "productos.csv"
+            salida = Path(directorio) / "outputs"
+            import csv
+
+            with ruta_csv.open("w", newline="", encoding="utf-8") as archivo:
+                escritor = csv.DictWriter(archivo, fieldnames=registros[0].keys())
+                escritor.writeheader()
+                escritor.writerows(registros)
+
+            with (
+                patch(
+                    "sys.argv",
+                    [
+                        "main",
+                        "--entrada",
+                        str(ruta_csv),
+                        "--salida",
+                        str(salida),
+                        "--sin-graficos",
+                    ],
+                ),
+                contextlib.redirect_stdout(io.StringIO()),
+            ):
+                main()
+
+            faltantes = pd.read_csv(salida / "faltantes.csv")
+            rechazos = pd.read_csv(salida / "rechazos.csv")
+
+        self.assertEqual(len(rechazos), 1)
+        self.assertEqual(
+            faltantes.loc[
+                faltantes["campo"] == "proteinas_g_100g", "faltantes"
+            ].item(),
+            1,
+        )
+
     def test_extension_no_soportada_se_rechaza(self):
         with self.assertRaisesRegex(ValueError, "formato de entrada debe ser CSV o JSON"):
             fuente_desde_ruta(Path("productos.xlsx"))

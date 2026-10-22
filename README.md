@@ -56,7 +56,7 @@ Las categorías son `Cereales`, `Bebidas`, `Lácteos`, `Snacks` y `Conservas`. L
 | Analizar | Filtra por categoría, ordena por nutriente y calcula resúmenes (`src/pipeline.py`). |
 | Comunicar | Muestra resultados y exporta tablas, rechazos, faltantes y gráficos (`src/main.py`). |
 
-Los faltantes no se imputan como cero y se excluyen solo de los cálculos que necesitan ese valor. Los rechazos incluyen un motivo. Las reglas de plausibilidad no son una validación regulatoria de etiquetado.
+Los conteos de faltantes (`faltantes.csv` y su gráfico) se calculan únicamente sobre productos válidos, igual que los resúmenes por categoría; las filas rechazadas se informan por separado en `rechazos.csv`. Los faltantes no se imputan como cero y se excluyen solo de los cálculos que necesitan ese valor. Las reglas de plausibilidad no son una validación regulatoria de etiquetado.
 
 ## 5. Organización del código
 
