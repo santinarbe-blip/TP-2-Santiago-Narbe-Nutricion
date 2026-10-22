@@ -3,6 +3,7 @@ import io
 import json
 import tempfile
 import unittest
+from dataclasses import asdict
 from pathlib import Path
 from unittest.mock import patch
 
@@ -95,6 +96,11 @@ class PipelineNutricionalTests(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "Nutriente desconocido: vitamina_c"):
             producto.obtener_nutriente("vitamina_c")
+
+    def test_como_registro_coincide_con_asdict(self):
+        producto = normalizar_ficha(generar_registros()[0])
+
+        self.assertEqual(producto.como_registro(), asdict(producto))
 
     def test_json_que_no_es_una_lista_se_rechaza(self):
         with tempfile.TemporaryDirectory() as directorio:

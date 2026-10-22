@@ -1,4 +1,23 @@
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
+
+
+COLUMNAS_NUTRIENTES = {
+    "energia": "energia_kcal_100g",
+    "proteinas": "proteinas_g_100g",
+    "carbohidratos": "carbohidratos_g_100g",
+    "azucares": "azucares_g_100g",
+    "grasas": "grasas_g_100g",
+    "grasas_saturadas": "grasas_saturadas_g_100g",
+    "fibra": "fibra_g_100g",
+    "sal": "sal_g_100g",
+}
+
+
+def columna_nutriente(nutriente: str) -> str:
+    try:
+        return COLUMNAS_NUTRIENTES[nutriente]
+    except KeyError:
+        raise ValueError(f"Nutriente desconocido: {nutriente}") from None
 
 
 @dataclass(frozen=True)
@@ -16,24 +35,7 @@ class ProductoNutricional:
     sal_g_100g: float | None
 
     def obtener_nutriente(self, nutriente: str) -> float | None:
-        if nutriente == "energia":
-            return self.energia_kcal_100g
-        atributo = f"{nutriente}_g_100g"
-        if not hasattr(self, atributo):
-            raise ValueError(f"Nutriente desconocido: {nutriente}")
-        return getattr(self, atributo)
+        return getattr(self, columna_nutriente(nutriente))
 
     def como_registro(self) -> dict:
-        return {
-            "codigo": self.codigo,
-            "nombre": self.nombre,
-            "categoria": self.categoria,
-            "energia_kcal_100g": self.energia_kcal_100g,
-            "proteinas_g_100g": self.proteinas_g_100g,
-            "carbohidratos_g_100g": self.carbohidratos_g_100g,
-            "azucares_g_100g": self.azucares_g_100g,
-            "grasas_g_100g": self.grasas_g_100g,
-            "grasas_saturadas_g_100g": self.grasas_saturadas_g_100g,
-            "fibra_g_100g": self.fibra_g_100g,
-            "sal_g_100g": self.sal_g_100g,
-        }
+        return asdict(self)

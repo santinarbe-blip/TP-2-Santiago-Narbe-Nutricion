@@ -3,7 +3,7 @@ import re
 
 import pandas as pd
 
-from src.modelo import ProductoNutricional
+from src.modelo import ProductoNutricional, columna_nutriente
 
 CAMPOS_NUMERICOS = (
     "energia_kcal_100g",
@@ -88,7 +88,7 @@ def limpiar_productos(registros: list[dict]) -> tuple[list[ProductoNutricional],
 def comparar_etiquetas(
     productos: list[ProductoNutricional], categoria: str | None, nutriente: str
 ) -> pd.DataFrame:
-    columna = "energia_kcal_100g" if nutriente == "energia" else f"{nutriente}_g_100g"
+    columna = columna_nutriente(nutriente)
     registros = [producto.como_registro() for producto in productos]
     tabla = pd.DataFrame(registros)
     if tabla.empty:

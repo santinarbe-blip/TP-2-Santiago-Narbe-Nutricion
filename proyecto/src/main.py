@@ -4,6 +4,7 @@ from pathlib import Path
 import pandas as pd
 
 from src.fuentes import fuente_desde_ruta
+from src.modelo import columna_nutriente
 from src.pipeline import (
     comparar_etiquetas,
     limpiar_productos,
@@ -29,10 +30,11 @@ def generar_graficos(
     import matplotlib.pyplot as plt
 
     salida.mkdir(parents=True, exist_ok=True)
-    for nutriente, columna, unidad in (
-        ("energia", "energia_kcal_100g", "kcal/100 g"),
-        ("azucares", "azucares_g_100g", "g/100 g"),
+    for nutriente, unidad in (
+        ("energia", "kcal/100 g"),
+        ("azucares", "g/100 g"),
     ):
+        columna = columna_nutriente(nutriente)
         datos = comparacion.dropna(subset=[columna]).nsmallest(10, columna)
         datos = datos.sort_values(columna, ascending=True)
         figura, eje = plt.subplots(figsize=(9, max(4, len(datos) * 0.38)))
@@ -152,11 +154,7 @@ def main() -> None:
     print(f"Filas rechazadas: {len(rechazos)}")
     print(f"Productos comparados: {len(comparacion)}")
     print(f"\nOrdenados por {argumentos.nutriente} (menor a mayor):")
-    columna = (
-        "energia_kcal_100g"
-        if argumentos.nutriente == "energia"
-        else f"{argumentos.nutriente}_g_100g"
-    )
+    columna = columna_nutriente(argumentos.nutriente)
     print(
         comparacion[["codigo", "nombre", "categoria", columna]]
         .fillna("no disponible")
