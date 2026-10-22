@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from src.modelo import columna_nutriente
+from src.modelo import ProductoNutricional, columna_nutriente
 
 ETIQUETAS_NUTRIENTES = {
     "energia": ("Energía", "kcal/100 g"),
@@ -62,6 +62,40 @@ def graficar_promedios_categorias(
     plt.close(figura)
 
 
+def graficar_distribucion_categorias(
+    productos: list[ProductoNutricional], nutriente: str, salida: Path
+) -> None:
+    """Grafica la distribución del nutriente seleccionado por categoría."""
+    import matplotlib.pyplot as plt
+
+    nombre_nutriente, unidad = ETIQUETAS_NUTRIENTES[nutriente]
+    columna = columna_nutriente(nutriente)
+    tabla = pd.DataFrame([producto.como_registro() for producto in productos])
+    valores = []
+    etiquetas = []
+    for categoria in sorted(tabla["categoria"].unique()):
+        grupo = tabla.loc[tabla["categoria"] == categoria, columna].dropna()
+        if not grupo.empty:
+            valores.append(grupo)
+            etiquetas.append(f"{categoria}\n(n={len(grupo)})")
+
+    figura, eje = plt.subplots(figsize=(9, 5))
+    if valores:
+        eje.boxplot(valores)
+        eje.set_xticks(range(1, len(etiquetas) + 1), etiquetas)
+    else:
+        eje.text(0.5, 0.5, "No disponible", ha="center", va="center")
+    eje.set_title(
+        f"Distribución de {nombre_nutriente} por categoría "
+        f"({len(productos)} productos válidos)"
+    )
+    eje.set_xlabel("Categoría y cantidad de valores disponibles")
+    eje.set_ylabel(unidad)
+    figura.tight_layout()
+    figura.savefig(salida / "grafico_distribucion_categoria.png", dpi=150)
+    plt.close(figura)
+
+
 def generar_graficos(
     comparacion: pd.DataFrame,
     faltantes: list[dict],
@@ -71,8 +105,9 @@ def generar_graficos(
     cantidad_productos: int,
     total_validos: int,
     resumen_categorias: list[dict],
+    productos: list[ProductoNutricional],
 ) -> None:
-    """Genera gráficos de comparación, promedios por categoría y faltantes."""
+    """Genera gráficos comparativos, distribuciones, promedios y faltantes."""
     import matplotlib.pyplot as plt
     from matplotlib.patches import Patch
 
@@ -176,3 +211,4 @@ def generar_graficos(
     figura.savefig(salida / "grafico_datos_faltantes.png", dpi=150)
     plt.close(figura)
     graficar_promedios_categorias(resumen_categorias, total_validos, salida)
+    graficar_distribucion_categorias(productos, nutriente, salida)

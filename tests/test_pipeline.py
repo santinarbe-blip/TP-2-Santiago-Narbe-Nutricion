@@ -52,6 +52,10 @@ class PipelineNutricionalTests(unittest.TestCase):
                 },
             ]
         )
+        registros = [dict(registro) for registro in generar_registros()[:2]]
+        registros[0].update(categoria="Bebidas", sal_g_100g=0.8)
+        registros[1].update(categoria="Snacks", sal_g_100g=0.2)
+        productos = [normalizar_ficha(registro) for registro in registros]
         with tempfile.TemporaryDirectory() as directorio:
             with patch(
                 "matplotlib.pyplot.subplots", side_effect=registrar_subplot
@@ -78,12 +82,16 @@ class PipelineNutricionalTests(unittest.TestCase):
                             "proteinas_g_100g": 5.0,
                         },
                     ],
+                    productos,
                 )
             eje = ejes[0]
 
             self.assertTrue((Path(directorio) / "grafico_comparacion.png").is_file())
             self.assertTrue(
                 (Path(directorio) / "grafico_promedios_categoria.png").is_file()
+            )
+            self.assertTrue(
+                (Path(directorio) / "grafico_distribucion_categoria.png").is_file()
             )
             self.assertIn("Sal", eje.get_title())
             self.assertIn("todas las categorías", eje.get_title())
@@ -98,6 +106,12 @@ class PipelineNutricionalTests(unittest.TestCase):
             self.assertEqual(len(ejes[3].containers), 3)
             self.assertEqual(
                 list(ejes[3].containers[0].datavalues), [2.5, 6.0]
+            )
+            self.assertIn("Distribución de Sal", ejes[4].get_title())
+            self.assertGreaterEqual(len(ejes[4].lines), 12)
+            self.assertEqual(
+                [etiqueta.get_text() for etiqueta in ejes[4].get_xticklabels()],
+                ["Bebidas\n(n=1)", "Snacks\n(n=1)"],
             )
             plt.close("all")
 

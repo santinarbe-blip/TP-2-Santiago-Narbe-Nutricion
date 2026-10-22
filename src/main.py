@@ -85,6 +85,7 @@ def main() -> None:
             len(comparacion),
             len(productos),
             resumen_categorias,
+            productos,
         )
 
     print(f"Registros leídos: {len(registros)}")
