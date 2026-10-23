@@ -91,6 +91,35 @@ def limpiar_productos(registros: list[dict]) -> tuple[list[ProductoNutricional],
     return productos, rechazos
 
 
+def verificar_conservacion(
+    registros: list[dict],
+    productos: list[ProductoNutricional],
+    rechazos: list[dict],
+) -> None:
+    """Verifica que cada registro leído sea válido o esté rechazado."""
+    if len(registros) != len(productos) + len(rechazos):
+        raise ValueError(
+            "No se conserva la cantidad de registros: "
+            f"{len(registros)} leídos, {len(productos)} válidos y "
+            f"{len(rechazos)} rechazados."
+        )
+
+
+def buscar_producto(
+    productos: list[ProductoNutricional], codigo: str
+) -> ProductoNutricional | None:
+    """Busca un producto por código, comparando el texto sin espacios."""
+    codigo_busqueda = str(codigo).strip()
+    return next(
+        (
+            producto
+            for producto in productos
+            if str(producto.codigo).strip() == codigo_busqueda
+        ),
+        None,
+    )
+
+
 def comparar_etiquetas(
     productos: list[ProductoNutricional], categoria: str | None, nutriente: str
 ) -> pd.DataFrame:

@@ -96,7 +96,7 @@ Ejecución de `python -m src.main --entrada data/productos.csv --categoria Snack
 ```text
 Registros leídos: 62
 Productos válidos: 60
-Filas rechazadas: 2
+Registros rechazados: 2
 Productos comparados: 12
 
 Ordenados por azucares (menor a mayor):
