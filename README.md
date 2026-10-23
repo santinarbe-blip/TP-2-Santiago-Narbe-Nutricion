@@ -65,7 +65,12 @@ python -m src.generar_datos
 │   ├── main.py                   # Argumentos y coordinación de la aplicación
 │   ├── modelo.py                 # Dataclass ProductoNutricional
 │   └── pipeline.py               # Validación, limpieza, comparación y resúmenes
-├── tests/                        # Pruebas automatizadas con unittest
+├── tests/
+│   ├── README.md                 # Instrucciones para ejecutar las pruebas
+│   ├── test_fuentes.py
+│   ├── test_graficos.py
+│   ├── test_main.py
+│   └── test_pipeline.py
 └── outputs/                      # Resultados de ejecución; no se versiona
 ```
 
@@ -155,6 +160,19 @@ La aplicación genera también las siguientes visualizaciones. Las imágenes que
 **Registros rechazados.** Agrupa los dos registros inválidos de prueba según el motivo del rechazo.
 
 ![Registros de prueba rechazados según el motivo](docs/grafico_rechazos_por_motivo.png)
+
+### Preguntas de análisis y resolución teórica
+
+**Pregunta general: ¿Qué patrones de composición nutricional se observan entre los productos y las categorías del conjunto de prueba, y qué tan completos y consistentes son los datos que sostienen esa comparación?**
+
+Para responderla, primero se comparan los promedios entre categorías y la variación entre sus productos; después se observan casos particulares y la relación entre nutrientes. Por último, se revisan los faltantes y rechazos para delimitar qué registros respaldan esas comparaciones. Como todo el conjunto es sintético, los resultados describen únicamente los datos de prueba y no permiten concluir cómo son los alimentos comerciales ni hacer recomendaciones nutricionales.
+
+1. **Promedios por categoría — ¿qué diferencias generales aparecen en los nutrientes comparados?** Cereales presenta el promedio más alto de azúcares (**29,42 g/100 g**) y Snacks el menor (**17,88 g/100 g**). Conservas tiene el mayor promedio de fibra (**6,68 g/100 g**), mientras que Cereales tiene el de proteínas (**10,37 g/100 g**); Bebidas tiene el menor promedio de proteínas (**3,91 g/100 g**). Estos promedios resumen la muestra sintética, no clasifican alimentos ni representan categorías comerciales.
+2. **Distribución por categoría — ¿los promedios representan a todos los productos por igual?** No necesariamente. En azúcares, la mediana de Cereales es la más alta (**27,2 g/100 g**, con 11 valores disponibles); Bebidas muestra un rango amplio (**0,3–55,2 g/100 g**) y Snacks varía entre **5,2 y 35,4 g/100 g**. La dispersión y los puntos individuales muestran diferencias dentro de cada categoría que un promedio por sí solo oculta.
+3. **Comparación de Snacks — ¿qué productos de la categoría tienen los menores valores de azúcares?** Galletas 09 presenta el menor valor (**5,2 g/100 g**), seguida de Galletas 05 (**5,7 g/100 g**); Crackers 03 tiene el mayor (**35,4 g/100 g**). El gráfico ordena los diez menores valores, así que los dos productos con más azúcares aparecen en la tabla de salida, pero no en esa figura.
+4. **Azúcares y grasas — ¿un mayor valor de azúcares coincide con más grasas en Snacks?** Los puntos no muestran una relación lineal clara. La correlación de Pearson para los 12 productos de prueba con ambos valores disponibles es aproximadamente **−0,09**, cercana a cero. Es un resumen descriptivo de esta muestra pequeña y simulada: no prueba ausencia de relación en alimentos reales ni permite inferir causalidad.
+5. **Datos no disponibles — ¿cuántos valores faltan y cómo afectan la comparación?** Hay cuatro faltantes entre los 60 productos válidos: uno de azúcares, uno de sal, uno de fibra y uno de proteínas. No se sustituyen por cero; se excluyen solo de los cálculos que requieren ese nutriente. Por eso, para azúcares se muestran 11 valores en Cereales y 12 en cada una de las otras categorías.
+6. **Registros rechazados — ¿qué problemas de entrada se detectaron antes del análisis?** De los 62 registros leídos, dos se rechazaron: uno por el formato inválido del código y otro por superar 100 g/100 g de azúcares. Son registros deliberadamente inválidos para probar la validación; se excluyen de los gráficos y resúmenes de productos válidos, y no representan errores encontrados en productos comerciales.
 
 ## 6. Limitaciones
 
